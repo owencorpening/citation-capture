@@ -30,7 +30,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 48px 36px;
+    padding: 48px 36px 88px;
     text-align: center;
   }
 
@@ -176,53 +176,77 @@
     max-width: 400px;
   }
 
+  /* Tap zones — left/right halves */
+  .tap-zone {
+    position: fixed;
+    top: 0;
+    width: 50%;
+    height: calc(100dvh - 80px);
+    z-index: 5;
+    cursor: pointer;
+  }
+  .tap-prev { left: 0; }
+  .tap-next { right: 0; }
+
+  /* Nav bar at bottom */
+  .nav-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 12px;
+    z-index: 10;
+    background: rgba(15,17,23,0.85);
+    backdrop-filter: blur(8px);
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .nav-btn {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.05);
+    color: #c8a96e;
+    font-size: 22px;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .nav-btn:hover { background: rgba(200,169,110,0.15); border-color: #c8a96e; }
+  .nav-btn.hidden { visibility: hidden; }
+
   /* Dots */
   .dots {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
     display: flex;
-    gap: 8px;
-    z-index: 10;
+    gap: 10px;
+    align-items: center;
   }
 
   .dot {
-    width: 6px;
-    height: 6px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
     background: #444;
     transition: background 0.3s, transform 0.3s;
+    cursor: pointer;
+    padding: 8px;
+    background-clip: content-box;
+    -webkit-tap-highlight-color: transparent;
   }
 
   .dot.active {
     background: #c8a96e;
-    transform: scale(1.4);
+    background-clip: content-box;
+    transform: scale(1.3);
   }
-
-  /* Arrow hints */
-  .arrows {
-    position: fixed;
-    bottom: 44px;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    padding: 0 20px;
-    pointer-events: none;
-    z-index: 10;
-  }
-
-  .arrow {
-    font-size: 20px;
-    color: #333;
-    pointer-events: all;
-    cursor: pointer;
-    padding: 8px;
-    transition: color 0.2s;
-  }
-
-  .arrow:hover { color: #c8a96e; }
-  .arrow.hidden { visibility: hidden; }
 </style>
 </head>
 <body>
@@ -297,11 +321,15 @@
 
 </div>
 
-<div class="dots" id="dots"></div>
+<!-- Tap zones -->
+<div class="tap-zone tap-prev" id="tapPrev"></div>
+<div class="tap-zone tap-next" id="tapNext"></div>
 
-<div class="arrows">
-  <span class="arrow" id="prev">&#8592;</span>
-  <span class="arrow" id="next">&#8594;</span>
+<!-- Nav bar -->
+<div class="nav-bar">
+  <button class="nav-btn" id="prev" aria-label="Previous">&#8592;</button>
+  <div class="dots" id="dots"></div>
+  <button class="nav-btn" id="next" aria-label="Next">&#8594;</button>
 </div>
 
 <script>
@@ -309,10 +337,11 @@
   const dotsEl = document.getElementById('dots');
   const prevBtn = document.getElementById('prev');
   const nextBtn = document.getElementById('next');
+  const tapPrev = document.getElementById('tapPrev');
+  const tapNext = document.getElementById('tapNext');
   const total = deck.children.length;
   let current = 0;
 
-  // Build dots
   for (let i = 0; i < total; i++) {
     const d = document.createElement('div');
     d.className = 'dot' + (i === 0 ? ' active' : '');
@@ -330,14 +359,14 @@
 
   prevBtn.addEventListener('click', () => goTo(current - 1));
   nextBtn.addEventListener('click', () => goTo(current + 1));
+  tapPrev.addEventListener('click', () => goTo(current - 1));
+  tapNext.addEventListener('click', () => goTo(current + 1));
 
-  // Keyboard
   document.addEventListener('keydown', e => {
     if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(current + 1);
     if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(current - 1);
   });
 
-  // Touch / swipe
   let startX = 0, startY = 0, dragging = false;
 
   deck.addEventListener('touchstart', e => {
