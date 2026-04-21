@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Citation Capture</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -30,7 +30,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 48px 36px 88px;
+    padding: 48px 36px max(88px, calc(72px + env(safe-area-inset-bottom)));
     text-align: center;
   }
 
@@ -194,11 +194,10 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 72px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 12px;
+    padding: 12px 12px max(12px, env(safe-area-inset-bottom));
     z-index: 10;
     background: rgba(15,17,23,0.85);
     backdrop-filter: blur(8px);
