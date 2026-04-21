@@ -98,7 +98,7 @@ Westlaw and Lexis use obfuscated markup — case name and court are reliably cap
 A mid-size litigation firm with 10 associates averaging 2 hours per week on citation reconstruction and error correction:
 
 - **20 hours/week** of non-billable or written-off time
-- **At $300/hr blended rate: $6,000/week, $312,000/year**
+- **At \$300/hr blended rate: \$6,000/week, \$312,000/year**
 - **Setup time per attorney: 20 minutes**
 - **Cost: $0**
 
