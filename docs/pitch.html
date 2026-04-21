@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Citation Capture</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: Georgia, serif;
+    background: #0f1117;
+    color: #f0ece0;
+    height: 100dvh;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  .deck {
+    display: flex;
+    height: 100dvh;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+  }
+
+  .slide {
+    min-width: 100vw;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 48px 36px;
+    text-align: center;
+  }
+
+  /* Slide accent colors */
+  .s1 { background: #0f1117; }
+  .s2 { background: #111620; }
+  .s3 { background: #0d1a12; }
+  .s4 { background: #1a1208; }
+  .s5 { background: #0f1117; }
+  .s6 { background: #12100f; }
+
+  .eyebrow {
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 20px;
+  }
+
+  h1 {
+    font-size: clamp(28px, 7vw, 52px);
+    line-height: 1.15;
+    font-weight: 400;
+    margin-bottom: 24px;
+  }
+
+  h1 em {
+    font-style: normal;
+    color: #c8a96e;
+  }
+
+  .sub {
+    font-size: clamp(15px, 3.5vw, 20px);
+    line-height: 1.6;
+    color: #b0a89a;
+    max-width: 520px;
+  }
+
+  .stat-row {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    width: 100%;
+    max-width: 460px;
+    margin-top: 8px;
+  }
+
+  .stat {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 18px 22px;
+    text-align: left;
+  }
+
+  .stat-num {
+    font-size: clamp(22px, 5vw, 34px);
+    font-weight: 700;
+    color: #c8a96e;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-label {
+    font-size: 13px;
+    color: #888;
+    letter-spacing: 0.03em;
+  }
+
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+    max-width: 460px;
+    margin-top: 8px;
+    text-align: left;
+  }
+
+  .step {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .step-num {
+    background: #c8a96e;
+    color: #0f1117;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    border-radius: 50%;
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .step-text {
+    font-size: clamp(14px, 3vw, 17px);
+    line-height: 1.5;
+    color: #d8d0c4;
+  }
+
+  .pill-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 8px;
+    max-width: 480px;
+  }
+
+  .pill {
+    background: rgba(200, 169, 110, 0.12);
+    border: 1px solid rgba(200, 169, 110, 0.3);
+    color: #c8a96e;
+    border-radius: 999px;
+    padding: 7px 16px;
+    font-size: 14px;
+    font-family: 'Courier New', monospace;
+  }
+
+  .big-stat {
+    font-size: clamp(52px, 14vw, 96px);
+    font-weight: 700;
+    color: #c8a96e;
+    line-height: 1;
+    margin-bottom: 12px;
+  }
+
+  .cta-block {
+    margin-top: 32px;
+    padding: 20px 28px;
+    border: 1px solid #c8a96e;
+    border-radius: 12px;
+    font-size: clamp(14px, 3vw, 17px);
+    color: #c8a96e;
+    max-width: 400px;
+  }
+
+  /* Dots */
+  .dots {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+  }
+
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #444;
+    transition: background 0.3s, transform 0.3s;
+  }
+
+  .dot.active {
+    background: #c8a96e;
+    transform: scale(1.4);
+  }
+
+  /* Arrow hints */
+  .arrows {
+    position: fixed;
+    bottom: 44px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .arrow {
+    font-size: 20px;
+    color: #333;
+    pointer-events: all;
+    cursor: pointer;
+    padding: 8px;
+    transition: color 0.2s;
+  }
+
+  .arrow:hover { color: #c8a96e; }
+  .arrow.hidden { visibility: hidden; }
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+  <!-- 1. Hook -->
+  <div class="slide s1">
+    <div class="eyebrow">Citation Capture</div>
+    <h1>Every citation error<br>is a <em>write-off.</em><br>Every missed source<br>is a <em>risk.</em></h1>
+    <p class="sub">One click. Logged. Bluebook formatted. In your own spreadsheet.</p>
+  </div>
+
+  <!-- 2. The Problem -->
+  <div class="slide s2">
+    <div class="eyebrow">The Problem</div>
+    <h1>The brief is due.<br>Where did that<br><em>case</em> go?</h1>
+    <p class="sub">Research is non-linear. Citations end up in sticky notes, open tabs, scratch docs — and sometimes nowhere at all.</p>
+  </div>
+
+  <!-- 3. What it does -->
+  <div class="slide s3">
+    <div class="eyebrow">One Click</div>
+    <h1>Click.<br><em>Done.</em></h1>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-text">Captures case name, citation, court, and date from the page</div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-text">Logs a formatted Bluebook citation to your private Google Sheet</div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-text">Tags it to the current matter — then you're back to work</div></div>
+    </div>
+  </div>
+
+  <!-- 4. ROI -->
+  <div class="slide s4">
+    <div class="eyebrow">The ROI Case — 10 Associates</div>
+    <div class="big-stat">$312K</div>
+    <p class="sub">per year in recoverable associate time.<br>At $300/hr blended rate, 2 hrs/week lost to citation reconstruction.</p>
+    <div class="stat-row" style="margin-top:24px; flex-direction: row; flex-wrap: wrap; gap: 12px;">
+      <div class="stat" style="flex:1; min-width:120px;">
+        <div class="stat-num">20 min</div>
+        <div class="stat-label">setup per attorney</div>
+      </div>
+      <div class="stat" style="flex:1; min-width:120px;">
+        <div class="stat-num">$0</div>
+        <div class="stat-label">ongoing cost</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Works on -->
+  <div class="slide s5">
+    <div class="eyebrow">Source Coverage</div>
+    <h1>Works where<br>you <em>already</em><br>research.</h1>
+    <div class="pill-row">
+      <div class="pill">Google Scholar</div>
+      <div class="pill">CourtListener</div>
+      <div class="pill">Fastcase</div>
+      <div class="pill">Westlaw</div>
+      <div class="pill">Lexis</div>
+      <div class="pill">Slip Opinions</div>
+    </div>
+  </div>
+
+  <!-- 6. CTA -->
+  <div class="slide s6">
+    <div class="eyebrow">Status</div>
+    <h1>Your data.<br>Your sheet.<br><em>Your tool.</em></h1>
+    <p class="sub">No subscription. No vendor. No data leaving your control. Built on Google's free infrastructure — you deploy it once and own it permanently.</p>
+    <div class="cta-block">
+      Interested in early access?<br>Open an issue or reach out directly.
+    </div>
+  </div>
+
+</div>
+
+<div class="dots" id="dots"></div>
+
+<div class="arrows">
+  <span class="arrow" id="prev">&#8592;</span>
+  <span class="arrow" id="next">&#8594;</span>
+</div>
+
+<script>
+  const deck = document.getElementById('deck');
+  const dotsEl = document.getElementById('dots');
+  const prevBtn = document.getElementById('prev');
+  const nextBtn = document.getElementById('next');
+  const total = deck.children.length;
+  let current = 0;
+
+  // Build dots
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.addEventListener('click', () => goTo(i));
+    dotsEl.appendChild(d);
+  }
+
+  function goTo(n) {
+    current = Math.max(0, Math.min(total - 1, n));
+    deck.style.transform = `translateX(-${current * 100}vw)`;
+    document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === current));
+    prevBtn.classList.toggle('hidden', current === 0);
+    nextBtn.classList.toggle('hidden', current === total - 1);
+  }
+
+  prevBtn.addEventListener('click', () => goTo(current - 1));
+  nextBtn.addEventListener('click', () => goTo(current + 1));
+
+  // Keyboard
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(current + 1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(current - 1);
+  });
+
+  // Touch / swipe
+  let startX = 0, startY = 0, dragging = false;
+
+  deck.addEventListener('touchstart', e => {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    dragging = true;
+  }, { passive: true });
+
+  deck.addEventListener('touchend', e => {
+    if (!dragging) return;
+    const dx = e.changedTouches[0].clientX - startX;
+    const dy = e.changedTouches[0].clientY - startY;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+      goTo(dx < 0 ? current + 1 : current - 1);
+    }
+    dragging = false;
+  }, { passive: true });
+
+  goTo(0);
+</script>
+</body>
+</html>
