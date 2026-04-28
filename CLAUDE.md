@@ -1,5 +1,10 @@
 # CLAUDE.md — citation-capture
 
+## Status
+- **State:** In Progress
+- **Next action:** Validate DOM scraping manually on Google Scholar and CourtListener before writing any code.
+- **Last updated:** 2026-04-28
+
 ## What this is
 
 A legal citation logging tool built on the same architecture as `~/dev/image-capture`. A browser bookmarklet scrapes citation metadata from legal research pages and logs formatted Bluebook citations to a private Google Sheet via Google Apps Script. A local matter-tagging system lets attorneys tag citations to the current brief/matter without any cloud dependency.
